@@ -1,0 +1,30 @@
+services:
+  graphiti-mcp:
+    image: zepai/knowledge-graph-mcp:standalone
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.standalone
+    command: ["uv", "run", "main.py"]
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: ${NEO4J_USER:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-password}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
+      GRAPHITI_GROUP_ID: ${GRAPHITI_GROUP_ID:-main}
+      SEMAPHORE_LIMIT: ${SEMAPHORE_LIMIT:-10}
+      CONFIG_PATH: /app/mcp/config/config.yaml
+      PATH: /root/.local/bin:${PATH}
+    networks:
+      - graphiti_net
+    volumes:
+      - ../config/config-docker-neo4j.yaml:/app/mcp/config/config.yaml:ro
+    expose:
+      - "8000"
+
+networks:
+  graphiti_net:
+    external: true
+    name: graphiti-1_default

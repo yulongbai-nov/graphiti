@@ -21,11 +21,17 @@ services:
         condition: service_healthy
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_CA_BUNDLE=${OPENAI_CA_BUNDLE:-/udc/.udc/certs/ca-bundle.crt}
+      - PYTHONHTTPSVERIFY=${PYTHONHTTPSVERIFY:-1}
+      - SSL_CERT_FILE=${SSL_CERT_FILE:-/udc/.udc/certs/ca-bundle.crt}
+      - REQUESTS_CA_BUNDLE=${REQUESTS_CA_BUNDLE:-/udc/.udc/certs/ca-bundle.crt}
       - NEO4J_URI=bolt://neo4j:${NEO4J_PORT:-7687}
       - NEO4J_USER=${NEO4J_USER:-neo4j}
       - NEO4J_PASSWORD=${NEO4J_PASSWORD:-password}
       - PORT=8000
       - db_backend=neo4j
+    volumes:
+      - udc_monolith:/udc:ro
   neo4j:
     image: neo4j:5.26.2
     profiles: [""]
@@ -90,3 +96,6 @@ services:
 volumes:
   neo4j_data:
   falkordb_data:
+  udc_monolith:
+    external: true
+    name: udc_monolith

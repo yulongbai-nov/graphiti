@@ -1,0 +1,29 @@
+services:
+  graphiti-mcp:
+    networks:
+      - graphiti_net
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=${NEO4J_USER:-neo4j}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-password}
+      - NEO4J_DATABASE=${NEO4J_DATABASE:-neo4j}
+      - MCP_PORT=${MCP_PORT:-18080}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_CA_BUNDLE=${OPENAI_CA_BUNDLE:-/udc/.udc/certs/ca-bundle.crt}
+      - PYTHONHTTPSVERIFY=${PYTHONHTTPSVERIFY:-1}
+      - SSL_CERT_FILE=${SSL_CERT_FILE:-/udc/.udc/certs/ca-bundle.crt}
+      - REQUESTS_CA_BUNDLE=${REQUESTS_CA_BUNDLE:-/udc/.udc/certs/ca-bundle.crt}
+    depends_on: []  # we'll reuse the existing neo4j from graphiti stack
+    volumes:
+      - ../config/config-docker-neo4j.yaml:/app/mcp/config/config.yaml:ro
+      - udc_monolith:/udc:ro
+
+networks:
+  graphiti_net:
+    external: true
+    name: graphiti-1_default
+
+volumes:
+  udc_monolith:
+    external: true
+    name: udc_monolith
